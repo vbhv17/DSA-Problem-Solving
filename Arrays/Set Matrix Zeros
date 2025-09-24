@@ -1,0 +1,201 @@
+//Bruteforce 
+Approach : Make a tempMatrix and copy all elements of original Matrix into this tempArray. Traverse original Matrix and as soon as a zero is encountered, 
+          note its row and col index, go to tempMatrix and mark its entire row and col as 0. Repeat this process until all elements of original matrix are traversed.
+          Once done, copy all elements of tempMatrix back to original Matrix.
+
+  TC: O(MxN) + O(M) + O(N)
+  SC: O(MxN)
+
+CODE : 
+class Solution {
+
+    public void markRowColZero(int i, int j, int m, int n, int [][]t){
+        for(int x = 0 ; x<m ; x++){
+            t[x][j] = 0;
+        }
+
+        for(int y = 0 ; y < n ; y++){
+            t[i][y] = 0;
+        }
+    }
+
+
+    public void setZeroes(int[][] matrix) {
+
+        int m = matrix.length;  
+        int n = matrix[0].length;
+        int[][] tempMatrix = new int[m][n];
+
+        //traverse and make copy matrix
+        for(int i=0; i<m ; i++){
+            for(int j=0; j<n ; j++){
+                tempMatrix[i][j] = matrix[i][j];
+            }
+        }
+
+        for(int i = 0 ; i<m ; i++){
+            for(int j = 0 ; j<n ; j++){
+                if(matrix[i][j] == 0){
+                    markRowColZero(i, j, m, n, tempMatrix);
+                }
+            }
+        }
+
+        for(int i = 0 ; i<m ; i++){
+            for(int j = 0 ; j<n ; j++){
+                matrix[i][j] = tempMatrix[i][j];
+            }
+        }
+
+    }
+}
+
+
+
+// Better Solution 
+Approach : If we somehow just keep a track of all the rows and columns at which zeroes are present then our job is done.
+           No need to keep an extra tempMatrix 
+           So we make a Rows[m] matrix and initialize it to false, here m is the no. of rows in original matrix.
+           So we make a Cols[n] matrix and initialize it to false, here n is the no. of cols in original matrix.
+           Now we simply traverse over the original matrix and check if any zero is encountered then we mark that row and that index as T.
+          i.e if zero was found at (2,1), we mark Rows[2] = True, Cols[1] = True
+          Now simply at the end we traverse the matrix and check at every element if Rows[i] OR Cols[j] is true, we mark that index in original matrix as 0.
+
+TC : O(MxN)
+SC : O(M) + O(N)
+
+CODE: 
+
+class Solution {
+    public void setZeroes(int[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+
+        boolean[] RowZeroes = new boolean[m];
+        boolean[] ColZeroes = new boolean[n];
+
+        for(int i=0 ; i<m ; i++){
+            for(int j = 0; j<n ; j++){
+                if(matrix[i][j] == 0){
+                    RowZeroes[i] = true;
+                    ColZeroes[j] = true;
+                }
+            }
+        }
+
+        for(int i=0 ; i<m ; i++){
+            for(int j = 0; j<n ; j++){
+                if(RowZeroes[i] == true || ColZeroes[j] == true){
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+
+    }
+}
+
+// OPTIMAL Solution
+Approach : Since we just want to know the row and column in which zeroes are present and that we have to do this in place (without any extra space, by modifying the original array) 
+          We can use the first row and first column as the marker row and marker column 
+          i.e if we encounter a zero at lets say index (2,1) then we will mark 0 at [0][1] (row element) and also at [2][0] (column element)
+          Then at the end we will use this markers, i.e first row and first columns to mark the entire matrix with zeroes.
+
+1 1 1      1 0 1
+1 0 1   => 0 0 1  (first row element and first column element of [1][1], marked as zero)
+1 1 1      1 1 1
+
+Now traverse all the rows and mark 0 if first row element is 0 
+Now tarverse all the cols and mark 0 if first col element is 0 
+
+Final Matrix will look like this : 
+
+1 0 1
+0 0 0
+1 0 1
+
+
+
+CORNER CASE : 
+1 1 1        0 1 1
+1 1 1   =>   1 1 1  (first row element and first column element of [2][0], marked as zero)
+0 1 1        0 1 1
+
+Now traverse all the rows and mark 0 if first row element is 0 
+Now tarverse all the cols and mark 0 if first col element is 0 
+
+Final Matrix will look like this : 
+
+0 0 0 
+0 1 1 
+0 0 0 
+
+But this is not the correct solution. Below is the correct solutiom =>
+0 1 1
+0 1 1 
+0 0 0 
+
+So to handle this corner case, we first check if first row and first column are impacted, if yes, we set isFirstRowImpacted, isFirstColImpacted variables as true.
+Then we set markers for first row and first column.
+Then, we start from (1,1) we dont disturb the markers i.e the first row and the first column elements. 
+At the end we mark the elements of first row and first column on the basis of isFirstRowImpacted/isFirstColImpacted.
+
+TC : O(MxN)
+SC : O(1)
+
+CODE: 
+class Solution {
+    public void setZeroes(int[][] matrix) {
+        
+        int m = matrix.length;
+        int n = matrix[0].length;
+
+        boolean firstRowImpacted = false;
+        boolean firstColImpacted = false;
+
+        //Checking if first row is impacted
+        for(int j=0; j<n ; j++){
+            if(matrix[0][j] == 0){
+                firstRowImpacted = true;
+            }
+        }
+
+        //Checking if first col is impacted 
+        for(int i = 0; i<m ; i++){
+            if(matrix[i][0] == 0){
+                firstColImpacted = true;
+            }
+        }
+
+        //Setting markers for first row and first column 
+        for(int i=0 ; i<m ; i++){
+            for(int j=0 ; j<n ; j++){
+                if(matrix[i][j] == 0){
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+
+        //Traversing from 2nd row 2nd column, not disturbing markers and marking zeroes on the basis of markers
+        for(int i = 1 ; i<m ; i++){
+            for(int j = 1 ; j<n ; j++){
+                if(matrix[i][0] == 0 || matrix [0][j] == 0){
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+
+        //Setting zeroes in first rows if first row was impacted initially
+        if(firstRowImpacted){
+            for(int j=0 ; j<n ; j++)
+                matrix[0][j] = 0; 
+        }
+
+        //Setting zeroes in first column if first column was impacted initially
+        if(firstColImpacted){
+            for(int i=0 ; i<m ; i++)
+                matrix[i][0] = 0; 
+        }
+
+    }
+}
