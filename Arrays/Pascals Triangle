@@ -1,0 +1,50 @@
+Approach : We look at this problem like a pattern printing problem.
+           We can build the entire pascals triangle like a 2D matrix
+
+Points to be noted in a Pascals Triangle, 
+
+1. If the required size of pascals triangle is n, then there will be n rows in the pascals triangle.
+2. At ith row, there will be (i+1) elements/columns i.e 1 element in 0th row, 2 elements in 1st row and so on...
+3. The element at the first and last column of every row will be 1 by default.
+4. Each Element in middle column will be sum of upar and side ka element i.e (i-1)(j-1) and exactly upar ka element i.e (i-1)(j) element 
+
+As per the above observations, a pascals triangle of size 5 will look like this 
+
+         0 1 2 3 4
+         
+0 ->     1
+1 ->     1 1
+2 ->     1 2 1
+3 ->     1 3 3 1 
+4 ->     1 4 6 4 1
+
+We put the same logic to code
+
+CODE: 
+
+class Solution {
+    public List<List<Integer>> generate(int numRows) {
+        
+        List<List<Integer>> result = new ArrayList<>(numRows); //Pascals triangle will have numRows rows
+
+        for(int i = 0; i<numRows ; i++){                        //For each row in the Pascals Triangle
+            List<Integer> row = new ArrayList<>(i+1);          //size of each row will be (i+1) because ith row will have i+1 elements
+            for(int j=0 ; j<=i ; j++){                        // j<=1 because there will be j columns in the ith row
+                if(j==0 || j==i){                            // if its the first or last row then we put 1
+                    row.add(1);
+                }
+                else{
+                    int num = result.get(i-1).get(j) + result.get(i-1).get(j-1);  //if its the middle rows we put upar ka and side ka element + exactly upar ka element
+                    row.add(num);
+                }
+            }
+            result.add(row);               // add this row to the result and move to next row
+        }
+        return result;
+    }
+}
+
+
+TC : O(numrows^2)
+SC : O(numrows^2)
+
