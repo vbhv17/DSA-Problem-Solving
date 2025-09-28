@@ -1,0 +1,78 @@
+//Bruteforce
+Approach : We have to find the maximum subarray sum. It is obvious that somehow we have to check all the possible subarrays 
+					 and calculate their sum. And decide which is the subarray which has the maximum sum.
+					 For this, we use two variables maxSum and currSum, and we'll run a nested for loop to find all the subarrays
+					 and at each iteration we'll keep on adding one element in the inner loop and check if currSum > maxSum 
+					 At the end we return maxSum which will be our result
+
+
+   Let's say we have [1 , -2 , 3 , 2] as the given array, 
+   All possible subarrays of this array would be 
+   [1], [1, -2], [1, -2, 3], [1, -2, 3, 2]
+   [-2], [-2, 3], [-2, 3, 2]
+   [3], [3,2]
+   [2]
+   
+   Notice how we are fetching all the subarrays. First we are standing at i=0 and we keep on adding one element until n-1 index
+   Then we move to the next element i=1 and then again we keep on adding one element on the right until n-1 index
+   In this we way we find all the subarrays of the given array 
+   And we also keep track of the sum of these subarrays by adding every new element to currSum
+   if at any given point, currSum > maxSum then we update maxSum 
+
+TC : O(N^2)
+SC : O(1)
+
+
+CODE: 
+class Solution {
+    public int maxSubArray(int[] nums) {
+
+        int n = nums.length;
+
+        int maxSum = Integer.MIN_VALUE;   // Minimum value of an integer
+        int currSum = 0;
+        for(int i = 0 ; i<n ; i++){
+            currSum = 0;
+            for(int j = i ; j<n ; j++){    //Loop to find out all subarrays of ith element
+                currSum += nums[j];       //Add current element to SubArray Sum
+                if(currSum > maxSum){
+                    maxSum = currSum;    //Update maxSum if currSum > maxSum
+                }
+            }
+        }
+        return maxSum;
+    }
+}
+
+
+//OPTIMAL Solution 
+
+KADANE's Algorithm : "Keep adding elements, reset if sum goes negative, track the maximum along the way."
+					 In other words, we just iterate ONCE over the entire array, like before we keep two variables currSum and maxSum 
+					 But the difference here is, WE RESET CURRSUM TO 0, IF AT ANY GIVEN POINT OF TIME CURRSUM BECOMES NEGATIVE.
+					 We do this because THERE IS NO NEED TO CARRY A NEGATIVE SUBARRAY SUM BECAUSE IT WILL ONLY REDUCE OUR MAXSUM
+					
+TC : O(N)
+SC : O(1)
+
+CODE:
+class Solution {
+    public int maxSubArray(int[] nums) {
+
+        int n = nums.length;
+
+        int maxSum = Integer.MIN_VALUE;  // Minimum value of an integer
+        int currSum = 0;
+        for(int i = 0 ; i<n ; i++){
+           currSum += nums[i];        //Add current element to current SubArray Sum 
+
+           if(currSum > maxSum)       //Update maxSum if currSum > maxSum
+            maxSum = currSum;
+
+           if(currSum<0)              //if currSum becomes negative at any point of time then update it to 0 since we dont want to carryforward a negative sum
+            currSum = 0;              // Because it will only decrease the maxSubArray Sum
+
+        }
+        return maxSum;
+    }
+}
