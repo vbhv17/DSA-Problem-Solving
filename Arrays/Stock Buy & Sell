@@ -1,0 +1,109 @@
+//Bruteforce Solution 
+Approach : We have to find nums[i] and nums[j] such that 
+		   1. j > i
+		   2. nums[j] > nums[i]
+		   3. nums[j] - nums[i] is maximum
+		   
+		   So we simpy find all such possible combinations of i and j in nums
+		   And keep on updating maxProfit if current Profit is greater than maxProfit
+
+
+Explanation : [7, 1, 6, 5, 3, 4]
+				initially i will be at 7 and j will be at 1, profit = -6 
+				then j will move forward to 6, profit = -1 
+				then j will move forward to 5, profit -2
+				then j will move forward to 3, profit -4 
+				then j will move forward to 4, profit -3
+				
+				then i will move to next position (1) and j will also move to next position (6), since we have to always satisfy j>i
+				then keep on calculating profit 
+				and keep track of maxProfit
+				
+CODE :
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        
+        int n = prices.length;
+        int maxProfit = 0;                             //worst case profit should be 0 and not negative eg. if prices are in decreasing order
+        for(int i = 0 ; i<n ; i++){                   //for each i
+            for(int j = i+1; j<n ; j++){             // since j should be greater than i
+                int profit = prices[j] - prices[i]; // profit calculation at each step
+                if(profit > maxProfit)                   
+                    maxProfit = profit;            // update maxProfit if current profit > maxProfit 
+            }
+        }
+        return maxProfit;
+    }
+}
+
+
+TC : O(N^2) TLE since n can be 10^5
+SC : O(1)
+
+********************************************************************
+
+//Better Solution 
+Approach : NA
+
+
+
+Explanation : 
+
+
+CODE :
+
+
+TC :
+SC :
+
+********************************************************************
+
+//OPTIMAL Solution https://www.youtube.com/watch?v=eMSfBgbiEjk
+Approach : In the previous solution, we were using nested loops and checking for every combination of i and j.
+		   To optimize this approach, we use this algorithm,
+		   1. Run a loop and keep track of minimum value encountered so far.
+		   2. At every step check if nums[i] - minimum encountered so far gives the maxProfit or not
+		   3. If yes, then update maxProfit
+
+
+
+Explanation : [7, 1, 5, 6, 3, 4]
+
+
+i								0	1	2	3	4	5
+
+min     						7	1	1	1	1	1
+
+prices[i] 						7	1	5	6	3	4
+
+profit(prices[i]-minimum)  		0	0	4	5	2	3
+
+maxProfit       				0	0	4	5	5	5
+
+CODE :
+class Solution {
+    public int maxProfit(int[] prices) {
+        
+        int n = prices.length;
+        int maxProfit = 0;
+        int minimum = Integer.MAX_VALUE;
+
+        for(int i = 0 ; i<n ; i++){
+            if(prices[i]<minimum)                 //check if we have found the new minimum
+                minimum = prices[i];
+            
+            int profit = prices[i] - minimum;   //profit at each step will be price at current step - minimum encountered so far on left side
+            if(profit > maxProfit){
+                maxProfit = profit;
+            }
+        }
+
+    return maxProfit;            
+    }
+}
+
+TC : O(N)
+SC : O(1)
+
+********************************************************************
